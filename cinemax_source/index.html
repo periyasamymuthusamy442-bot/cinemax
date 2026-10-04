@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>CineMax Pro — Tamil & Hindi Movie Booking</title>
+  <link rel="stylesheet" href="styles.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@300;400;500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+</head>
+<body>
+
+<!-- ══════════ PROCESSING OVERLAY ══════════ -->
+<div class="proc-ov" id="procOv">
+  <div class="proc-spin"></div>
+  <div class="proc-title">Processing Payment</div>
+  <div class="proc-sub">Please do not close this window</div>
+  <div class="proc-steps">
+    <div class="pstep" id="ps1"><div class="pstep-dot"></div>Verifying payment details</div>
+    <div class="pstep" id="ps2"><div class="pstep-dot"></div>Connecting to payment gateway</div>
+    <div class="pstep" id="ps3"><div class="pstep-dot"></div>Confirming transaction</div>
+    <div class="pstep" id="ps4"><div class="pstep-dot"></div>Generating your tickets</div>
+  </div>
+</div>
+
+<!-- ══════════ NAVBAR ══════════ -->
+<div id="toast" class="toast"></div>
+
+<nav id="mainNav">
+  <div class="logo" onclick="goHome()">
+    <span class="logo-icon">🎬</span>
+    <span class="lc">C</span><span>INE</span><span class="lm">MAX</span>
+  </div>
+  <div class="nav-links">
+    <button class="nl active" onclick="goHome()">Home</button>
+    <button class="nl" onclick="navGuard('movies','Movies')">Movies</button>
+    <button class="nl" onclick="navGuard('upcoming','Upcoming')">Upcoming</button>
+    <button class="nl" onclick="navGuard('bookings','My Bookings')">My Bookings</button>
+    <button class="nl" onclick="navGuard('profile','Profile')">Profile</button>
+  </div>
+  <div class="nav-right">
+    <div id="navUser" style="display:none" class="nav-user" onclick="logout()">
+      <div class="nav-av" id="navAv">U</div>
+      <span class="nav-un" id="navUn">User</span>
+      <span style="font-size:.6rem;color:var(--muted)">▼</span>
+    </div>
+    <button id="navSignBtn" class="btn-nav-sign" onclick="goPage('login')">Sign In</button>
+  </div>
+</nav>
+
+<!-- ══════════ PAGE: LOGIN ══════════ -->
+<div id="page-login" class="page active">
+  <div class="login-wrap">
+    <!-- LEFT PANEL -->
+    <div class="login-left">
+      <div class="lgc lgc1"></div>
+      <div class="lgc lgc2"></div>
+      <div class="lgc lgc3"></div>
+      <div class="login-brand">
+        <div class="brand-logo"><span class="bc">C</span>INE<br>MAX</div>
+        <div class="brand-tag">Your Ultimate Cinema Experience</div>
+        <div class="brand-feats">
+          <div class="bf"><div class="bf-icon">🎟️</div><div><div class="bf-t">Instant Booking</div><div class="bf-s">Book seats in 60 seconds</div></div></div>
+          <div class="bf"><div class="bf-icon">🪑</div><div><div class="bf-t">Pick Your Seat</div><div class="bf-s">Interactive seat map</div></div></div>
+          <div class="bf"><div class="bf-icon">🎭</div><div><div class="bf-t">Tamil &amp; Hindi</div><div class="bf-s">All latest blockbusters</div></div></div>
+          <div class="bf"><div class="bf-icon">💳</div><div><div class="bf-t">Secure Payment</div><div class="bf-s">UPI · Cards · Wallets · NetBanking</div></div></div>
+        </div>
+      </div>
+    </div>
+    <!-- RIGHT PANEL -->
+    <div class="login-right">
+      <div class="lf-wrap">
+        <h2 class="lf-title">Welcome Back</h2>
+        <p class="lf-sub">Sign in to continue your cinema experience</p>
+        <div class="ftabs">
+          <button class="ftab active" id="tab-in" onclick="switchTab('in')">Sign In</button>
+          <button class="ftab" id="tab-up" onclick="switchTab('up')">Sign Up</button>
+        </div>
+        <div id="signinAlert" class="signin-alert"><span class="sa-icon">🔒</span><div><b>Sign in required</b><span id="signinAlertMsg">Please sign in to continue.</span></div><button class="sa-x" onclick="hideSigninAlert()">✕</button></div>
+        <div id="errBox" class="err-box">Invalid credentials. Try: demo@cinemax.com / 1234</div>
+        <!-- SIGN IN FORM -->
+        <div id="formIn">
+          <div class="ig">
+            <label class="ilabel">Email</label>
+            <div class="iwrap"><span class="iicon">✉️</span><input type="email" class="inp" id="inEmail" placeholder="you@example.com"/></div>
+          </div>
+          <div class="ig">
+            <label class="ilabel">Password</label>
+            <div class="iwrap"><span class="iicon">🔒</span><input type="password" class="inp" id="inPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+          </div>
+          <div class="form-opts">
+            <label class="rem"><input type="checkbox" checked/> Remember me</label>
+            <span class="forgot">Forgot password?</span>
+          </div>
+          <button class="btn-sub" onclick="doLogin()">Sign In →</button>
+          <div class="divider"><span>or continue with</span></div>
+          <div class="social-row">
+            <div class="sbtn" onclick="socialLogin('Google')">🌐 Google</div>
+            <div class="sbtn" onclick="socialLogin('Facebook')">📘 Facebook</div>
+          </div>
+        </div>
+        <!-- SIGN UP FORM -->
+        <div id="formUp" style="display:none">
+          <div class="ig">
+            <label class="ilabel">Full Name</label>
+            <div class="iwrap"><span class="iicon">👤</span><input type="text" class="inp" id="upName" placeholder="Your Name"/></div>
+          </div>
+          <div class="ig">
+            <label class="ilabel">Email</label>
+            <div class="iwrap"><span class="iicon">✉️</span><input type="email" class="inp" id="upEmail" placeholder="you@example.com"/></div>
+          </div>
+          <div class="ig">
+            <label class="ilabel">Password</label>
+            <div class="iwrap"><span class="iicon">🔒</span><input type="password" class="inp" id="upPass" placeholder="Create password"/></div>
+          </div>
+          <button class="btn-sub" onclick="doSignup()">Create Account →</button>
+          <div class="divider"><span>or continue with</span></div>
+          <div class="social-row">
+            <div class="sbtn" onclick="socialLogin('Google')">🌐 Google</div>
+            <div class="sbtn" onclick="socialLogin('Facebook')">📘 Facebook</div>
+          </div>
+        </div>
+        <div class="sw-txt" id="swTxt">No account? <span onclick="switchTab('up')">Sign Up</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ PAGE: ADMIN DASHBOARD ══════════ -->
+<div id="page-admin" class="page">
+  <div class="ad-wrap">
+    <div class="ad-head">
+      <div>
+        <div class="ad-eyebrow">⚙ Admin Panel</div>
+        <h1 class="ad-title">Admin Dashboard</h1>
+      </div>
+      <div class="ad-tabs">
+        <button class="ad-tab active" data-tab="dash" onclick="adminTab('dash')">📊 Dashboard</button>
+        <button class="ad-tab" data-tab="bookings" onclick="adminTab('bookings')">🎟️ Bookings</button>
+        <button class="ad-tab" data-tab="users" onclick="adminTab('users')">👥 Users</button>
+        <button class="ad-tab" data-tab="movie" onclick="adminTab('movie')">🎬 Add Movie</button>
+      </div>
+    </div>
+    <div id="adminBody"></div>
+  </div>
+</div>
+
+<!-- ══════════ PAGE: HOME ══════════ -->
+<div id="page-home" class="page">
+  <!-- Hero Slider -->
+  <div class="hero">
+    <div class="hero-slides" id="heroSlides"></div>
+    <div class="hero-cnt" id="heroCnt"></div>
+    <div class="hero-dots" id="heroDots"></div>
+  </div>
+  <!-- Stats Bar -->
+  <div class="stats-bar">
+    <div class="si"><div class="si-num">8</div><div class="si-lbl">Movies Showing</div></div>
+    <div class="si"><div class="si-num">4</div><div class="si-lbl">Tamil Films</div></div>
+    <div class="si"><div class="si-num">4</div><div class="si-lbl">Hindi Films</div></div>
+    <div class="si"><div class="si-num">12</div><div class="si-lbl">Cinemas</div></div>
+    <div class="si"><div class="si-num">IMAX</div><div class="si-lbl">Experience</div></div>
+  </div>
+  <!-- Dashboard Grid -->
+  <div class="dash-grid">
+    <div class="sidebar">
+      <div class="sb-section">
+        <div class="sb-label">Navigation</div>
+        <div class="sb-link active" onclick="showDash('movies')"><span class="sb-icon">🎬</span> All Movies</div>
+        <div class="sb-link" onclick="showDash('upcoming')"><span class="sb-icon">🗓️</span> Coming Soon <span class="sb-badge">3</span></div>
+        <div class="sb-link" onclick="showDash('bookings')"><span class="sb-icon">🎟️</span> My Bookings</div>
+        <div class="sb-link" onclick="showDash('offers')"><span class="sb-icon">🏷️</span> Offers <span class="sb-badge">2</span></div>
+      </div>
+      <div class="sb-section">
+        <div class="sb-label">Browse</div>
+        <div class="sb-link" onclick="filterMovies('tamil')"><span class="sb-icon">🎭</span> Tamil Films</div>
+        <div class="sb-link" onclick="filterMovies('hindi')"><span class="sb-icon">🎦</span> Hindi Films</div>
+        <div class="sb-link" onclick="filterMovies('all')"><span class="sb-icon">🌟</span> All Languages</div>
+      </div>
+      <div class="sb-section">
+        <div class="sb-label">Account</div>
+        <div class="sb-link" onclick="showDash('profile')"><span class="sb-icon">👤</span> Profile</div>
+        <div class="sb-link" onclick="logout()"><span class="sb-icon">🚪</span> Sign Out</div>
+      </div>
+    </div>
+    <div class="main-cnt" id="mainCnt"></div>
+  </div>
+</div>
+
+<!-- ══════════ PAGE: MOVIE DETAIL ══════════ -->
+<div id="page-detail" class="page">
+  <div class="det-hero">
+    <div class="det-bg" id="detBg"></div>
+    <div class="det-ov"></div>
+    <div class="det-back"><button class="back-btn" onclick="goHome()">← Back</button></div>
+    <div class="det-cnt">
+      <div class="det-poster">
+        <img id="detImg" src="" alt="" onerror="this.style.display='none';document.getElementById('detFb').style.display='block'"/>
+        <div id="detFb" style="display:none;width:185px;aspect-ratio:2/3;border-radius:9px"></div>
+      </div>
+      <div class="det-info">
+        <div class="det-genres" id="detGenres"></div>
+        <h1 class="det-title" id="detTitle"></h1>
+        <p class="det-tagline" id="detTagline"></p>
+        <div class="det-rats" id="detRats"></div>
+        <div class="det-meta" id="detMeta"></div>
+        <p class="det-desc" id="detDesc"></p>
+        <div><div class="cast-ttl">Starring</div><div class="cast-chips" id="detCast"></div></div>
+        <div class="det-actions">
+          <button class="btn-det-p" onclick="scrollToST()">🎟 Book Tickets</button>
+          <button class="btn-det-s">▶ Trailer</button>
+          <button class="btn-det-s">♡ Wishlist</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Showtimes -->
+  <div class="st-sec" id="stSec">
+    <div style="margin-bottom:22px">
+      <div style="font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:6px">Choose Showtime</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.9rem;letter-spacing:.05em">Today's Shows</div>
+    </div>
+    <div class="date-tabs" id="dtTabs"></div>
+    <div class="st-grid" id="stGrid"></div>
+  </div>
+</div>
+
+<!-- ══════════ PAGE: SEAT BOOKING ══════════ -->
+<div id="page-seats" class="page">
+  <div class="seat-wrap">
+    <div class="seat-topbar">
+      <button class="back-btn" onclick="goPage('detail')">← Back</button>
+      <div>
+        <div class="st-mov-title" id="sTitle"></div>
+        <div class="st-mov-meta" id="sMeta"></div>
+      </div>
+      <div class="steps">
+        <div class="step done"><div class="step-n">✓</div>Movie</div><div class="step-arr">›</div>
+        <div class="step done"><div class="step-n">✓</div>Time</div><div class="step-arr">›</div>
+        <div class="step cur"><div class="step-n">3</div>Seats</div><div class="step-arr">›</div>
+        <div class="step"><div class="step-n">4</div>Payment</div>
+      </div>
+    </div>
+    <div class="seat-body">
+      <!-- Seat Grid -->
+      <div class="seat-area">
+        <div class="screen-wrap">
+          <div class="screen-bar">ALL EYES THIS WAY — SCREEN</div>
+          <div class="screen-persp"></div>
+        </div>
+        <div class="s-legend">
+          <div class="leg"><div class="lbox lb-av"></div>Available</div>
+          <div class="leg"><div class="lbox lb-vip"></div>VIP Recliner</div>
+          <div class="leg"><div class="lbox lb-sel"></div>Selected</div>
+          <div class="leg"><div class="lbox lb-bkd"></div>Booked</div>
+        </div>
+        <div class="seat-cont" id="seatGrid"></div>
+      </div>
+      <!-- Booking Panel -->
+      <div class="bpanel">
+        <div class="bp-title">Your Booking</div>
+        <div class="bp-movie">
+          <div class="bp-poster">
+            <img id="bpImg" src="" alt="" onerror="this.style.display='none';document.getElementById('bpFb').style.display='block'"/>
+            <div id="bpFb" style="display:none;width:100%;height:100%;background:linear-gradient(135deg,#1a0a2e,#4a0070)"></div>
+          </div>
+          <div>
+            <div class="bp-mov-title" id="bpTitle"></div>
+            <div class="bp-show" id="bpShow"></div>
+          </div>
+        </div>
+        <div class="bp-sec">Selected Seats</div>
+        <div class="bp-seats" id="bpSeats"><span class="bp-no">No seats selected</span></div>
+        <div class="bp-row"><span class="pl" id="bpLblS">Standard (x0)</span><span class="pv" id="bpValS">₹0</span></div>
+        <div class="bp-row"><span class="pl" id="bpLblV">VIP (x0)</span><span class="pv" id="bpValV">₹0</span></div>
+        <div class="bp-row"><span class="pl">Convenience Fee</span><span class="pv">₹30</span></div>
+        <div class="bp-tot"><span class="tl">TOTAL</span><span class="tv" id="bpTot">₹30</span></div>
+        <button class="btn-co" id="coBtn" disabled onclick="goPayment()">Select seats to continue</button>
+        <div class="sec-note">🔒 Secure · No hidden charges</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ PAGE: PAYMENT ══════════ -->
+<div id="page-payment" class="page">
+  <div class="pay-wrap">
+    <div class="pay-topbar">
+      <button class="back-btn" onclick="goPage('seats')">← Back to Seats</button>
+      <div>
+        <div class="st-mov-title" id="payTitle"></div>
+        <div class="st-mov-meta" id="payMeta"></div>
+      </div>
+      <div class="steps">
+        <div class="step done"><div class="step-n">✓</div>Movie</div><div class="step-arr">›</div>
+        <div class="step done"><div class="step-n">✓</div>Seats</div><div class="step-arr">›</div>
+        <div class="step cur"><div class="step-n">4</div>Payment</div><div class="step-arr">›</div>
+        <div class="step"><div class="step-n">5</div>Done</div>
+      </div>
+    </div>
+    <div class="pay-body">
+      <!-- Left: Payment Forms -->
+      <div class="pay-main">
+        <div class="offer-strip">
+          <span class="o-tag">OFFER</span>
+          <span class="o-txt">Use code <strong>CINE50</strong> — Get ₹50 off on orders above ₹300</span>
+          <span class="o-save" id="oSave"></span>
+        </div>
+        <div class="coupon-row">
+          <input class="coupon-inp" id="couponInp" placeholder="Enter promo code (Try: CINE50 or IMAX20)"/>
+          <button class="btn-apply" onclick="applyCoupon()">Apply</button>
+        </div>
+        <div class="coupon-msg" id="couponMsg"></div>
+        <div class="pay-sec-title">💳 Choose Payment Method</div>
+        <div class="pay-methods">
+          <div class="pmethod active" id="pm-card" onclick="selPayMethod('card',this)"><div class="pm-icon">💳</div><div class="pm-lbl">Card</div></div>
+          <div class="pmethod" id="pm-upi"     onclick="selPayMethod('upi',this)"><div class="pm-icon">📱</div><div class="pm-lbl">UPI</div></div>
+          <div class="pmethod" id="pm-netbank" onclick="selPayMethod('netbank',this)"><div class="pm-icon">🏦</div><div class="pm-lbl">Net Banking</div></div>
+          <div class="pmethod" id="pm-wallet"  onclick="selPayMethod('wallet',this)"><div class="pm-icon">👛</div><div class="pm-lbl">Wallets</div></div>
+        </div>
+        <!-- Card Form -->
+        <div id="form-card" class="pform">
+          <div class="pform-title">Enter Card Details</div>
+          <div style="display:flex;gap:7px;margin-bottom:14px">
+            <span class="clogo" style="color:#1a1f71;border-color:#1a1f71">VISA</span>
+            <span class="clogo" style="color:#eb001b;border-color:#eb001b">MC</span>
+            <span class="clogo" style="color:#2e77bc;border-color:#2e77bc">AMEX</span>
+            <span class="clogo" style="color:#f79e1b;border-color:#f79e1b">RUPAY</span>
+          </div>
+          <div class="card-form">
+            <div class="pig"><label class="plbl">Card Number</label><input class="pinp" id="cardNum" placeholder="1234 5678 9012 3456" maxlength="19" oninput="fmtCard(this)"/></div>
+            <div class="pig"><label class="plbl">Cardholder Name</label><input class="pinp" id="cardName" placeholder="Name as on card"/></div>
+            <div class="prow2">
+              <div class="pig"><label class="plbl">Expiry</label><input class="pinp" id="cardExp" placeholder="MM / YY" maxlength="7" oninput="fmtExp(this)"/></div>
+              <div class="pig"><label class="plbl">CVV</label><input class="pinp" id="cardCvv" placeholder="•••" maxlength="4" type="password"/></div>
+            </div>
+            <label style="display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--muted);cursor:pointer">
+              <input type="checkbox" checked style="accent-color:var(--gold)"/> Save card for future bookings
+            </label>
+          </div>
+        </div>
+        <!-- UPI Form -->
+        <div id="form-upi" class="pform" style="display:none">
+          <div class="pform-title">Pay via UPI</div>
+          <div class="upi-apps">
+            <div class="upi-app active" onclick="selUpi(this)"><div class="upi-icon">⚡</div><div class="upi-name">GPay</div></div>
+            <div class="upi-app" onclick="selUpi(this)"><div class="upi-icon">💜</div><div class="upi-name">PhonePe</div></div>
+            <div class="upi-app" onclick="selUpi(this)"><div class="upi-icon">🔵</div><div class="upi-name">Paytm</div></div>
+            <div class="upi-app" onclick="selUpi(this)"><div class="upi-icon">🟠</div><div class="upi-name">BHIM</div></div>
+          </div>
+          <div class="pig"><label class="plbl">UPI ID</label><input class="pinp" id="upiId" placeholder="yourname@upi"/></div>
+          <p style="font-size:.73rem;color:var(--muted);margin-top:9px">A payment request will be sent to your UPI app</p>
+        </div>
+        <!-- Net Banking Form -->
+        <div id="form-netbank" class="pform" style="display:none">
+          <div class="pform-title">Select Your Bank</div>
+          <div class="bank-grid">
+            <div class="bank-item active" onclick="selBank(this)"><div class="bank-icon">🔵</div><div class="bank-name">SBI</div></div>
+            <div class="bank-item" onclick="selBank(this)"><div class="bank-icon">🟤</div><div class="bank-name">HDFC</div></div>
+            <div class="bank-item" onclick="selBank(this)"><div class="bank-icon">🔴</div><div class="bank-name">ICICI</div></div>
+            <div class="bank-item" onclick="selBank(this)"><div class="bank-icon">🟡</div><div class="bank-name">Axis Bank</div></div>
+            <div class="bank-item" onclick="selBank(this)"><div class="bank-icon">🟢</div><div class="bank-name">Kotak</div></div>
+            <div class="bank-item" onclick="selBank(this)"><div class="bank-icon">🔷</div><div class="bank-name">PNB</div></div>
+          </div>
+          <div class="pig" style="margin-top:14px"><label class="plbl">User ID</label><input class="pinp" placeholder="Net banking user ID"/></div>
+          <div class="pig" style="margin-top:11px"><label class="plbl">Password</label><input class="pinp" type="password" placeholder="Enter password"/></div>
+        </div>
+        <!-- Wallet Form -->
+        <div id="form-wallet" class="pform" style="display:none">
+          <div class="pform-title">Choose Wallet</div>
+          <div class="wallet-grid">
+            <div class="wallet-item active" onclick="selWallet(this)"><div class="wallet-icon">💙</div><div class="wallet-name">Paytm</div></div>
+            <div class="wallet-item" onclick="selWallet(this)"><div class="wallet-icon">💜</div><div class="wallet-name">Amazon Pay</div></div>
+            <div class="wallet-item" onclick="selWallet(this)"><div class="wallet-icon">🟡</div><div class="wallet-name">Mobikwik</div></div>
+            <div class="wallet-item" onclick="selWallet(this)"><div class="wallet-icon">🟢</div><div class="wallet-name">Ola Money</div></div>
+            <div class="wallet-item" onclick="selWallet(this)"><div class="wallet-icon">🔴</div><div class="wallet-name">Freecharge</div></div>
+            <div class="wallet-item" onclick="selWallet(this)"><div class="wallet-icon">🔵</div><div class="wallet-name">Airtel Pay</div></div>
+          </div>
+          <p style="font-size:.78rem;color:var(--muted);margin-top:14px">Wallet Balance: <span style="color:var(--green);font-weight:600">₹1,240.00</span> available</p>
+        </div>
+      </div>
+      <!-- Right: Order Summary -->
+      <div class="pay-summary">
+        <div class="ps-title">Order Summary</div>
+        <div class="ps-movie">
+          <div class="ps-poster"><img id="psImg" src="" alt="" onerror="this.style.display='none'"/></div>
+          <div>
+            <div class="ps-mov-title" id="psTitle"></div>
+            <div class="ps-show" id="psShow"></div>
+          </div>
+        </div>
+        <div class="ps-slbl">Your Seats</div>
+        <div class="ps-sval" id="psSeats"></div>
+        <div class="ps-row"><span class="pl" id="psLblS">Standard (x0)</span><span class="pv" id="psValS">₹0</span></div>
+        <div class="ps-row"><span class="pl" id="psLblV">VIP (x0)</span><span class="pv" id="psValV">₹0</span></div>
+        <div class="ps-row"><span class="pl">Convenience Fee</span><span class="pv">₹30</span></div>
+        <div class="ps-row disc" id="discRow" style="display:none"><span class="pl">Promo Discount</span><span class="pv">- ₹50</span></div>
+        <div class="ps-tot"><span class="tl">Total Payable</span><span class="tv" id="psFinalTot">₹0</span></div>
+        <button class="btn-pay" id="payBtn" onclick="processPayment()">🔒 Pay Now</button>
+        <div class="secure-badges">
+          <div class="sec-badge">🔒 SSL</div>
+          <div class="sec-badge">🛡️ PCI DSS</div>
+          <div class="sec-badge">✅ Encrypted</div>
+        </div>
+        <div class="accepted-lbl">We Accept</div>
+        <div class="acc-chips">
+          <span class="acc-chip">VISA</span>
+          <span class="acc-chip">Mastercard</span>
+          <span class="acc-chip">UPI</span>
+          <span class="acc-chip">RuPay</span>
+          <span class="acc-chip">NetBanking</span>
+          <span class="acc-chip">Wallets</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ PAGE: CONFIRMATION ══════════ -->
+<div id="page-confirm" class="page">
+  <div class="conf-wrap">
+    <div class="conf-box">
+      <div class="conf-top">
+        <span class="conf-icon">🎉</span>
+        <div class="conf-title">Booking Confirmed!</div>
+        <p class="conf-sub">Payment successful · Tickets sent to your email</p>
+      </div>
+      <div class="conf-ticket">
+        <div class="ctf"><div class="ctl">Movie</div><div class="ctv" id="cfMov"></div></div>
+        <hr class="ct-dash"/>
+        <div class="ctg">
+          <div class="ctf"><div class="ctl">Date</div><div class="ctv" id="cfDate"></div></div>
+          <div class="ctf"><div class="ctl">Time</div><div class="ctv" id="cfTime"></div></div>
+          <div class="ctf"><div class="ctl">Hall</div><div class="ctv" id="cfHall"></div></div>
+          <div class="ctf"><div class="ctl">Format</div><div class="ctv" id="cfFmt"></div></div>
+          <div class="ctf"><div class="ctl">Seats</div><div class="ctv seats" id="cfSeats"></div></div>
+          <div class="ctf"><div class="ctl">Total Paid</div><div class="ctv price" id="cfTot"></div></div>
+          <div class="ctf"><div class="ctl">Paid Via</div><div class="ctv method" id="cfMethod"></div></div>
+          <div class="ctf"><div class="ctl">Status</div><div class="ctv" style="color:var(--green)">✅ SUCCESS</div></div>
+        </div>
+        <hr class="ct-dash"/>
+        <div class="code-wrap">
+          <div class="code-lbl">Booking ID</div>
+          <div class="code-val" id="cfCode"></div>
+        </div>
+        <div class="qr-box">📱</div>
+        <p style="text-align:center;font-size:.7rem;color:var(--muted);margin-top:8px">Scan at cinema entrance</p>
+      </div>
+      <div class="conf-actions">
+        <button class="btn-det-p" onclick="goHome()">← Home</button>
+        <button class="btn-det-s" onclick="showDash('bookings');goHome()">My Bookings</button>
+        <button class="btn-det-s" onclick="window.print()">🖨 Print</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ SCRIPTS ══════════ -->
+<script src="images.js"></script>
+<script src="movies.js"></script>
+<script src="auth.js"></script>
+<script src="seats.js"></script>
+<script src="payment.js"></script>
+<script src="admin.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
